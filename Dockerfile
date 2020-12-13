@@ -26,4 +26,11 @@ USER nginx
 
 HEALTHCHECK     CMD     [ "service", "nginx", "status" ]
 
+#COPY --from=build /navigation-working-title/dist/navigation-working-title/ /usr/share/nginx/html
+#COPY ./default.conf.template /etc/nginx/conf.d/default.conf.template
+#COPY ./nginx.conf /etc/nginx/nginx.conf
+
+#CMD /bin/ash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
+
+
 
