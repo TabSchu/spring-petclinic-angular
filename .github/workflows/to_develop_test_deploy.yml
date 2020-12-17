@@ -39,10 +39,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-       - name: install node/npm
-         run: apk add --update npm
-       - name: npm install
-         run: npm install
+      - name: install node/npm
+        run: apk add --update npm
+      - name: npm install
+        run: npm install
   #    - name: build docker image
   #      run: docker build . -t  spring-petclinic-angular:latest
   #    - name: run container from docker image
