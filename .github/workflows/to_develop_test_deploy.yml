@@ -41,8 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: install node/npm
-        run: apt update && apt install npm
+    #  - name: install node/npm
+    #    run: apt update && apt install npm
       - name: npm install
         run: npm install
   #    - name: build docker image
