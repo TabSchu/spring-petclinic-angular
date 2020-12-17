@@ -39,10 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: build docker image
-        run: docker build . -t  spring-petclinic-angular:latest
-      - name: run container from docker image
-        run: docker run -p 8080:8080 --detach --name petclinc-frontend-container spring-petclinic-angular:latest
+       - name: install node/npm
+         run: apk add --update npm
+       - name: npm install
+         run: npm install
+  #    - name: build docker image
+  #      run: docker build . -t  spring-petclinic-angular:latest
+  #    - name: run container from docker image
+  #      run: docker run -p 8080:8080 --detach --name petclinc-frontend-container spring-petclinic-angular:latest
       - run: cypress run --browser chrome --headless
 #jobs:
 #  ci:
