@@ -28,7 +28,14 @@ jobs:
         run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run test
     #  - name: Run E2E-Tests(cypress)
     #    run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run e2e
-
+  cypress-run:
+    runs-on: ubuntu-latest
+    # Docker image with Cypress pre-installed
+    # https://github.com/cypress-io/cypress-docker-images/tree/master/included
+    container: cypress/included:3.8.3
+    steps:
+      - uses: actions/checkout@v2
+      - run: cypress run
 #jobs:
 #  ci:
 #    runs-on: ubuntu-latest

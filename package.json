@@ -31,6 +31,7 @@
     "moment": "^2.22.1",
     "rxjs": "^6.3.1",
     "tether": "^1.4.4",
+    "xvfb": "^0.4.0",
     "zone.js": "^0.10.3"
   },
   "devDependencies": {
