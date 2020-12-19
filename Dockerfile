@@ -32,15 +32,20 @@ RUN cd /spring-petclinic-angular/ && \
        npm install
 
 #
-RUN chmod a+rwx /var/cache/nginx /var/run /var/log/nginx
-RUN sed -i.bak 's/listen\(.*\)80;/listen 8080;/' /etc/nginx/conf.d/default.conf
-RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
+#RUN chmod a+rwx /var/cache/nginx /var/run /var/log/nginx
+#RUN sed -i.bak 's/listen\(.*\)80;/listen 8080;/' /etc/nginx/conf.d/default.conf
+#RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
 #
-EXPOSE 8080
-USER nginx
-HEALTHCHECK CMD [ "service", "nginx", "status" ]
+#EXPOSE 8080
+#USER nginx
+#HEALTHCHECK CMD [ "service", "nginx", "status" ]
       #CMD ["npm", "start"]
 
 
       #CMD /bin/ash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
 
+
+COPY ./default.conf.template /etc/nginx/conf.d/default.conf.template
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+CMD /bin/ash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
