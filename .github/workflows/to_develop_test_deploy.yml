@@ -9,7 +9,7 @@ on:
       - develop
 
 jobs:
-  ci:
+  CI-Build-And-Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -31,7 +31,7 @@ jobs:
 
   Deploy:
     # Ensure test job passes before pushing image.
-    needs: Build-And-Test
+    needs: CI-Build-And-Test
 
     runs-on: ubuntu-latest
     steps:
