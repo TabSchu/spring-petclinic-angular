@@ -13,7 +13,8 @@ RUN $(npm bin)/ng build --prod
 FROM nginx:1.19.5-alpine AS runtime
 
 RUN apk update
-#RUN apk add --update nodejs npm
+RUN apk add --update nodejs npm
+RUN npm --version
 
 # Installs latest Chromium package
 RUN  echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
@@ -27,8 +28,8 @@ COPY  --from=build /workspace/dist/ /usr/share/nginx/html/
 COPY --from=build /workspace/ /spring-petclinic-angular/
 
 
-        #RUN cd /spring-petclinic-angular/ && \
-        #    npm install
+RUN cd /spring-petclinic-angular/ && \
+       npm install
 
 #
 RUN chmod a+rwx /var/cache/nginx /var/run /var/log/nginx

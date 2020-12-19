@@ -19,9 +19,10 @@ jobs:
       - name: Run Docker Image as Container
         run: docker run -p 8080:8080 --detach --name petclinc-frontend-container spring-petclinic-angular:latest
       - name: Install Node.js/npm on Docker Image
-        run: docker exec  -w /spring-petclinic-angular/ petclinc-frontend-container apk add --update npm
-      - name: Install Dependencies in Docker Container using npm
-        run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm install
+        run: docker exec  -w /spring-petclinic-angular/ petclinc-frontend-container npm --version
+        #apk add --update npm
+   #   - name: Install Dependencies in Docker Container using npm
+   #     run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm install
      # - name: install dependencies for cypress
      #   run: docker exec  petclinc-frontend-container apk --update add python3  make gcc g++ xvfb
       - name: Run Unit-Tests (Karma)
