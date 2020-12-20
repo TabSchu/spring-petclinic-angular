@@ -8,6 +8,9 @@ on:
       - "**"
       - "!develop"
       - "!release"
+  push:
+    branches:
+      - "master"
 
 env:
   IMAGE_NAME: spring-petclinic-angular
