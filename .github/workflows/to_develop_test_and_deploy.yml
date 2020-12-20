@@ -21,33 +21,16 @@ jobs:
         run:   docker build .  --file Dockerfile.tests   -t  $IMAGE_NAME:latest
       - name: Run Docker Image as Container
         run: docker run -p 8080:8080 --detach --name petclinc-frontend-container $IMAGE_NAME:latest
-      - name: Install Node.js/npm on Docker Image
-        run: docker exec  -w /spring-petclinic-angular/ petclinc-frontend-container npm --version
-        #apk add --update npm
-   #   - name: Install Dependencies in Docker Container using npm
-   #     run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm install
-     # - name: install dependencies for cypress
-     #   run: docker exec  petclinc-frontend-container apk --update add python3  make gcc g++ xvfb
       - name: Run Unit-Tests (Karma)
         run:  docker exec -w /spring-petclinic-angular/  petclinc-frontend-container  npm run test
       #- name: Run E2E-Tests(cypress)
       #  run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run  cypress:run --browser chrome --headless
-      # test
 
   Deploy:
     # Ensure test job passes before pushing image.
     needs: CI-Build-And-Test
 
     runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: AkhileshNS/heroku-deploy@v3.6.8 # use action
-#        # uses the other docker file/image, which is used for prod including nginx
-#        with:
-#          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#          heroku_app_name: ${{secrets.HEROKU_APP_NAME_DEV}} #App-name, unique in Heroku
-#          heroku_email: ${{secrets.HEROKU_ACCOUNT_EMAIL}}
-#          usedocker: true
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v2

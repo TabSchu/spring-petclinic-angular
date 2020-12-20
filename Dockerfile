@@ -1,3 +1,4 @@
+# CREATE BUILD ##
 FROM node:14.15.1-alpine as build
 
 WORKDIR /workspace/
@@ -7,7 +8,7 @@ RUN npm install
 COPY . /workspace/
 RUN $(npm bin)/ng build --prod
 
-
+# COPY RUNTIME BUILD AND CONFIGURE NGINX ##
 FROM nginx:1.19.5-alpine AS runtime
 
 # nginx stuff
