@@ -8,38 +8,87 @@ on:
     branches:
       - develop
 
-#jobs:
-#  ci:
-#    runs-on: ubuntu-latest
-#   # container:
-#   #   image: node:14.15.1-alpine
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: build docker image
-#        run: docker build . -t  spring-petclinic-angular:latest
-#      - name: run container from docker image
-#        run: docker run --rm -p 8080:8080 --detach --name petclinc-frontend-container spring-petclinic-angular:latest
-#      - name: Install Node.js/npm on Docker Image
-#        run: docker exec --workdir /spring-petclinic-angular/ petclinc-frontend-container apk add --update npm
-#      - name: Install Dependencies with npm in docker container
-#        run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm install
-#      - name: Run Unit-Tests (Karma)
-#        run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run test
-#      - name: Run E2E-Tests(cypress)
-#        run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run e2e
+env:
+  IMAGE_NAME: spring-petclinic-angular
 
 jobs:
-  ci:
+  CI-Build-And-Test:
     runs-on: ubuntu-latest
-    container:
-      image: node:14.15.1-alpine
-
     steps:
       - uses: actions/checkout@v2
-      - name: Install & Tests
+
+      - name: Build Docker.test Image, that one which is used for tests
+        run:   docker build .  --file Dockerfile.tests   -t  $IMAGE_NAME:latest
+      - name: Run Docker Image as Container
+        run: docker run -p 8080:8080 --detach --name petclinc-frontend-container $IMAGE_NAME:latest
+      - name: Install Node.js/npm on Docker Image
+        run: docker exec  -w /spring-petclinic-angular/ petclinc-frontend-container npm --version
+        #apk add --update npm
+   #   - name: Install Dependencies in Docker Container using npm
+   #     run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm install
+     # - name: install dependencies for cypress
+     #   run: docker exec  petclinc-frontend-container apk --update add python3  make gcc g++ xvfb
+      - name: Run Unit-Tests (Karma)
+        run:  docker exec -w /spring-petclinic-angular/  petclinc-frontend-container  npm run test
+      #- name: Run E2E-Tests(cypress)
+      #  run: docker exec -w /spring-petclinic-angular/ petclinc-frontend-container npm run  cypress:run --browser chrome --headless
+      # test
+
+  Deploy:
+    # Ensure test job passes before pushing image.
+    needs: CI-Build-And-Test
+
+    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: AkhileshNS/heroku-deploy@v3.6.8 # use action
+#        # uses the other docker file/image, which is used for prod including nginx
+#        with:
+#          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+#          heroku_app_name: ${{secrets.HEROKU_APP_NAME_DEV}} #App-name, unique in Heroku
+#          heroku_email: ${{secrets.HEROKU_ACCOUNT_EMAIL}}
+#          usedocker: true
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker Image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      - name: Push Docker image
         run: |
-          npm install
-          npm test
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
 
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to Heroku Container registry
+        env:
+          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+        run: heroku container:login
+      - name: Push to Heroku Container registry
+        env:
+          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+        run: heroku container:push -a ${{secrets.HEROKU_APP_NAME_DEV}} web
+      - name: Release
+        env:
+          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY }}
+        run: heroku container:release -a ${{secrets.HEROKU_APP_NAME_DEV}} web
