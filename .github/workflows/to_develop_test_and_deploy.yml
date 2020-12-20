@@ -1,4 +1,4 @@
-name: Petclinc frontend CI/CD for develop
+name: CI/CD for develop . Petclinc frontend
 
 on:
   push:
