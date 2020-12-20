@@ -1,4 +1,4 @@
-name: Petclinc frontend CI-Tests on pullrequests
+name: CI-Tests on pullrequests. Petclinc frontend
 
 on:
   pull_request:

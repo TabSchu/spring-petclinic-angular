@@ -1,4 +1,4 @@
-name: Petclinc frontend CI/CD for release (production)
+name: CI/CD for release (production). Petclinc frontend
 
 on:
   push:
