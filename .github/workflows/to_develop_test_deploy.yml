@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build Docker Image
-        run: docker build . -t  spring-petclinic-angular:latest
+      - name: Build Docker.test Image, that one which is used for tests
+        run:   docker build .  --file Dockerfile.tests   -t  spring-petclinic-angular:latest
       - name: Run Docker Image as Container
         run: docker run -p 8080:8080 --detach --name petclinc-frontend-container spring-petclinic-angular:latest
       - name: Install Node.js/npm on Docker Image
@@ -39,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: AkhileshNS/heroku-deploy@v3.6.8 # use action
+        # uses the other docker file/image, which is used for prod including nginx
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: ${{secrets.HEROKU_APP_NAME_DEV}} #App-name, unique in Heroku
