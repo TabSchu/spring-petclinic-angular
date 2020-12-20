@@ -7,7 +7,7 @@ RUN npm install
 COPY . /workspace/
 RUN $(npm bin)/ng build --prod
 
-
+#
 FROM nginx:1.19.5-alpine AS runtime
 
 # nginx stuff
